@@ -1,0 +1,23 @@
+version: '3.1'
+services:
+  spring-boot-ms:
+    container_name: spring-boot-ms
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ibm/spring-boot-ms:latest
+    environment:
+      SPRING_DATA_MONGODB_HOST: mongodb
+    logging:
+      driver: json-file
+    ports:
+    - 8080:8080
+    depends_on:
+    - mongodb
+  mongodb:
+    container_name: mongodb
+    image: mongo
+    logging:
+      driver: json-file
+    ports:
+    - 27017:27017

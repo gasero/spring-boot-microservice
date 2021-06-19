@@ -1,0 +1,49 @@
+cloudconfiguri: http://localhost:8888
+
+server:
+  port: 8080
+  servlet:
+    context-path: /api/v1
+
+springfox:
+  documentation:
+    swagger:
+      v2:
+        path: /api-docs
+
+spring:
+  application:
+    name: Container
+  profiles:
+    active: development
+  data:
+#    mongodb:
+#      host: mongoserver
+#      port: 27017
+  main:
+    banner-mode: CONSOLE
+  banner:
+    location: banner.txt
+  cloud:
+    config:
+      uri: ${cloudconfiguri}
+      fail-fast: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+  health:
+    cassandra:
+      enabled: true
+  metrics:
+    distribution:
+      percentiles[http.server.requests]: 0.90,0.95,0.99
+  info:
+    git:
+      mode: full
+

@@ -1,0 +1,192 @@
+swagger: "2.0"
+info:
+  description: "This is a sample container server"
+  version: "1.0.0"
+  title: "Container server"
+basePath: "/api/v1"
+tags:
+- name: "container"
+  description: "Everything about container"
+schemes:
+- "https"
+- "http"
+securityDefinitions:
+  Bearer:
+    type: apiKey
+    name: Authorization
+    in: header
+security:
+- Bearer: []
+parameters:
+  pageSize:
+    name: pageSize
+    in: query
+    description: Number of records returned
+    type: integer
+  pageNumber:
+    name: pageNumber
+    in: query
+    description: Page number
+    type: integer
+  sortProperty:
+    name: sortProperty
+    in: query
+    description: Sort by this property name
+    type: string
+  sortOrder:
+    name: sortOrder
+    in: query
+    description: >
+      Sort order:
+       * asc - Ascending, from A to Z.
+       * desc - Descending, from Z to A.
+    type: string
+    enum:
+    - asc
+    - desc
+paths:
+  /container/{containerId}:
+    get:
+      tags:
+      - "container"
+      summary: "Find container by ID"
+      description: "Returns a single container"
+      operationId: "getContainerById"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "containerId"
+        in: "path"
+        description: "ID of container to return"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/ContainerModel"
+        400:
+          description: "Invalid ID supplied"
+          schema:
+            $ref: '#/definitions/ApiResponse'
+        404:
+          $ref: '#/responses/404NotFound'
+        500:
+          $ref: '#/responses/500InternalServerException'
+  /container/findByVersion:
+    get:
+      tags:
+      - "container"
+      summary: "Finds container by version"
+      operationId: "findContainerByVersion"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "version"
+        in: "query"
+        description: "Version value that needs to be considered for filter"
+        required: true
+        type: "integer"
+        format: "int64"
+      - $ref: "#/parameters/pageSize"
+      - $ref: "#/parameters/pageNumber"
+      - $ref: "#/parameters/sortProperty"
+      - $ref: "#/parameters/sortOrder"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: '#/definitions/ContainerSearchResult'
+        400:
+          description: "Invalid version value"
+          schema:
+            $ref: '#/definitions/ApiResponse'
+        500:
+          $ref: '#/responses/500InternalServerException'
+  /container/findByNameAndVersion:
+    get:
+      tags:
+      - "container"
+      summary: "Finds container by name and version"
+      operationId: "findContainerByNameAndVersion"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "query"
+        description: "Container name that needs to be considered for filter"
+        required: true
+        type: "string"
+      - name: "version"
+        in: "query"
+        description: "Version value that needs to be considered for filter"
+        required: true
+        type: "integer"
+        format: "int64"
+      - $ref: "#/parameters/pageSize"
+      - $ref: "#/parameters/pageNumber"
+      - $ref: "#/parameters/sortProperty"
+      - $ref: "#/parameters/sortOrder"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: '#/definitions/ContainerSearchResult'
+        400:
+          description: "Invalid version value"
+          schema:
+            $ref: '#/definitions/ApiResponse'
+        500:
+          $ref: '#/responses/500InternalServerException'
+definitions:
+  ContainerModel:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+      name:
+        type: "string"
+      version:
+        type: "integer"
+        format: "int64"
+      created:
+        type: "string"
+        format: "date-time"
+  ContainerSearchResult:
+    type: "object"
+    properties:
+      totalSize:
+        type: "integer"
+        format: "int64"
+      result:
+        type: "array"
+        items:
+          $ref: '#/definitions/ContainerModel'
+  ApiResponse:
+    type: "object"
+    properties:
+      code:
+        type: "integer"
+        format: "int32"
+      type:
+        type: "string"
+      message:
+        type: "string"
+
+responses:
+  401Unauthorized:
+    description: Authentication failed
+    schema:
+      $ref: '#/definitions/ApiResponse'
+  403Forbidden:
+    description: Authorization failed
+    schema:
+      $ref: '#/definitions/ApiResponse'
+  404NotFound:
+    description: The specified resource was not found
+    schema:
+      $ref: '#/definitions/ApiResponse'
+  500InternalServerException:
+    description: An unexpected error occured.
+    schema:
+      $ref: "#/definitions/ApiResponse"

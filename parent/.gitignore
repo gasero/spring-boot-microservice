@@ -1,0 +1,13 @@
+/target/
+**/target/
+*/nbproject/
+!.mvn/wrapper/maven-wrapper.jar
+**/.DS_Store
+**/out/
+*.*~
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
